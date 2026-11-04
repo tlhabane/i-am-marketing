@@ -189,8 +189,8 @@ export default function App() {
         <div className="flex items-center">
           <img 
             src={Logo} 
-            alt="I AM MARKETING Logo" 
-            className="h-20 md:h-24 w-auto brightness-0 invert"
+            alt="I Am Marketing | Integrated Marketing & Print Agency" 
+            className="h-24 md:h-36 w-auto brightness-0 invert"
           />
         </div>
       </nav>
@@ -211,7 +211,7 @@ export default function App() {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-[#E5B84A]"></span>
               </span>
               <span className="text-xs font-medium text-purple-200 tracking-[0.2em]">
-                The Next Chapter in Integrated Marketing is Underway
+                Our Next Chapter in Integrated Marketing is Underway
               </span>
             </div>
 
