@@ -1,0 +1,53 @@
+name: Build and Deploy
+
+on:
+  workflow_dispatch:
+    #branches:
+      #- master
+
+jobs:
+  # The 'build' job remains the same (npm run build and upload-artifact)
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install Dependencies
+        run: npm ci
+      - name: Build Project
+        run: npm run build
+
+      # --- NEW STEP 1: Configure Pages ---
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      # --- NEW STEP 2: Upload Artifact for Deployment ---
+      # This replaces the old 'upload-artifact' step's purpose for deployment
+      - name: Upload Artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist # Must match your Vite output directory
+
+  # --- NEW 'deploy' Job ---
+  deploy:
+    # Requires the build job to finish
+    needs: build
+    # Must use the official 'github-pages' environment
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    # These permissions are mandatory for the official actions
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
