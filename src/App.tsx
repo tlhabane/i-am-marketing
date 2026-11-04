@@ -3,8 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { 
   Mail, 
   CheckCircle2, 
-  ArrowRight, 
-  MapPin, 
+  ArrowRight,  
   Phone,
   LayoutGrid,
   Palette,
@@ -25,6 +24,34 @@ const COLORS = {
 
 const LAUNCH_DATE = new Date('2027-01-02T00:00:00+02:00');
 
+const services = [
+    {
+      icon: LayoutGrid,
+      title: "Strategic Marketing",
+      description: "Data-driven advertising campaigns that reach your audience exactly where they are."
+    },
+    {
+      icon: Palette,
+      title: "Brand Design",
+      description: "Crafting bold visual identities that resonate and stand the test of time."
+    },
+    {
+      icon: Printer,
+      title: "Litho & Digital Print",
+      description: "High-impact print services for everything from corporate stationery to large scale media."
+    },
+    {
+      icon: Calendar,
+      title: "Corporate Events",
+      description: "End-to-end management for exhibitions, conferences, and bespoke seminars."
+    },
+    {
+      icon: Monitor,
+      title: "Digital Media",
+      description: "Modern signage and digital communications to keep your brand relevant and visible."
+    }
+  ];
+
 interface TimeLeft {
   days: number;
   hours: number;
@@ -34,6 +61,43 @@ interface TimeLeft {
 
 // --- Components ---
 
+const PageLoadingSpinner = () => {
+  return (
+    <motion.div
+      key="loader"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.5 }}
+      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#1F1027]"
+    >
+      <div className="relative">
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+          className="w-24 h-24 rounded-full border-2 border-white/5 border-t-[#E5B84A]"
+        />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="w-12 h-12 bg-[#4B2A5B]/20 rounded-full animate-pulse" />
+        </div>
+      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="mt-8 flex flex-col items-center gap-2"
+      >
+        <span className="text-[#E5B84A] font-bold tracking-[0.3em] uppercase text-[10px]">I Am Marketing</span>
+        <div className="h-[2px] w-12 bg-white/10 overflow-hidden rounded-full">
+          <motion.div
+            animate={{ x: [-48, 48] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            className="w-1/2 h-full bg-[#E5B84A]"
+          />
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+};
 const CountdownCircle = ({ value, label, max }: { value: number; label: string; max: number }) => {
   const radius = 42;
   const circumference = 2 * Math.PI * radius;
@@ -112,9 +176,7 @@ const ServiceCard = ({ icon: Icon, title, description, delay }: { icon: any; tit
   </motion.div>
 );
 
-// --- Main App ---
-
-export default function App() {
+const Main = () => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
@@ -134,9 +196,11 @@ export default function App() {
     return () => clearInterval(timer);
   }, []);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!email || !email.includes('@')) {
+    const regExp =
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    if (!regExp.test(String(email).toLowerCase())) {
       setStatus('error');
       return;
     }
@@ -148,37 +212,14 @@ export default function App() {
     }, 1500);
   };
 
-  const services = [
-    {
-      icon: LayoutGrid,
-      title: "Strategic Marketing",
-      description: "Data-driven advertising campaigns that reach your audience exactly where they are."
-    },
-    {
-      icon: Palette,
-      title: "Brand Design",
-      description: "Crafting bold visual identities that resonate and stand the test of time."
-    },
-    {
-      icon: Printer,
-      title: "Litho & Digital Print",
-      description: "High-impact print services for everything from corporate stationery to large scale media."
-    },
-    {
-      icon: Calendar,
-      title: "Corporate Events",
-      description: "End-to-end management for exhibitions, conferences, and bespoke seminars."
-    },
-    {
-      icon: Monitor,
-      title: "Digital Media",
-      description: "Modern signage and digital communications to keep your brand relevant and visible."
-    }
-  ];
-
   return (
-    <div className="min-h-screen bg-[#1F1027] text-[#F8F9FA] selection:bg-[#E5B84A] selection:text-[#1F1027] overflow-x-hidden">
-      {/* Background Effects */}
+    <motion.div
+      key="content"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+            {/* Background Effects */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#4B2A5B] rounded-full blur-[120px] opacity-20 animate-pulse" />
         <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-[#E5B84A] rounded-full blur-[120px] opacity-10" />
@@ -235,6 +276,9 @@ export default function App() {
 
             {/* Lead Capture */}
             <div className="max-w-md mx-auto">
+              <p className="text-[#E5B84A] text-sm font-bold py-6 block md:hidden">
+                Get notified when we launch!
+              </p>
               <form onSubmit={handleSubmit} className="relative group">
                 <div className="absolute -inset-1 bg-gradient-to-r from-[#4B2A5B] to-[#E5B84A] rounded-full blur opacity-20 group-focus-within:opacity-40 transition-opacity" />
                 <div className="relative flex p-1 bg-white/5 border border-white/10 rounded-full backdrop-blur-xl">
@@ -355,60 +399,26 @@ export default function App() {
           </div>
         </div>
       </footer>
-      <footer className="relative z-10 px-6 py-16 border-t border-white/5 hidden invisible">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
-          <div className="space-y-6">
-            <img 
-              src="/assets/aistudio/Logo_1213de0d.png" 
-              alt="I AM MARKETING Logo" 
-              className="h-8 md:h-10 w-auto brightness-0 invert"
-            />
-            <p className="text-sm text-white/40 leading-relaxed max-w-xs">
-              A 100% women-owned dynamic marketing company committed to creativity and professionalism since 2007.
-            </p>
-          </div>
-          
-          <div className="space-y-6">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#E5B84A]">Contact Information</h4>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3 group cursor-default">
-                <MapPin className="w-5 h-5 text-white/20 group-hover:text-[#E5B84A] transition-colors shrink-0" />
-                <span className="text-sm text-white/60 leading-tight">
-                  173 Aquamarine Drive, Pebblerock Golf Village,<br />
-                  Kameeldrift, Pretoria, 0035
-                </span>
-              </li>
-              <li className="flex items-center gap-3 group">
-                <Phone className="w-5 h-5 text-white/20 group-hover:text-[#E5B84A] transition-colors shrink-0" />
-                <a href="tel:+27832779549" className="text-sm text-white/60 hover:text-white transition-colors">
-                  +27 83 277 9549
-                </a>
-              </li>
-              <li className="flex items-center gap-3 group">
-                <Mail className="w-5 h-5 text-white/20 group-hover:text-[#E5B84A] transition-colors shrink-0" />
-                <a href="mailto:hello@iam.za.bz" className="text-sm text-white/60 hover:text-white transition-colors">
-                  hello@iam.za.bz
-                </a>
-              </li>
-            </ul>
-          </div>
+    </motion.div>
+  );
+};
 
-          <div className="space-y-6">
-            <h4 className="text-xs font-bold uppercase tracking-widest text-[#E5B84A]">Quick Links</h4>
-            <div className="flex flex-wrap gap-x-8 gap-y-4">
-              <a href="#" className="text-sm text-white/40 hover:text-[#E5B84A] transition-colors">About Us</a>
-              <a href="#" className="text-sm text-white/40 hover:text-[#E5B84A] transition-colors">Portfolio</a>
-              <a href="#" className="text-sm text-white/40 hover:text-[#E5B84A] transition-colors">Privacy Policy</a>
-              <a href="#" className="text-sm text-white/40 hover:text-[#E5B84A] transition-colors">Terms of Service</a>
-            </div>
-            <div className="pt-4">
-              <p className="text-[10px] text-white/20 uppercase tracking-tighter">
-                &copy; {new Date().getFullYear()} I AM MARKETING. All rights reserved.
-              </p>
-            </div>
-          </div>
-        </div>
-      </footer>
+// --- Main App ---
+
+export default function App() {
+  const [isPageLoading, setIsPageLoading] = useState(true);
+  
+  useEffect(() => {
+    // Artificial delay for smooth loading transition
+    const timer = setTimeout(() => setIsPageLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-[#1F1027] text-[#F8F9FA] selection:bg-[#E5B84A] selection:text-[#1F1027] overflow-x-hidden">
+      <AnimatePresence mode="wait">
+        {isPageLoading ? <PageLoadingSpinner /> : <Main />}
+      </AnimatePresence>
     </div>
   );
 }
