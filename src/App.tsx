@@ -187,7 +187,7 @@ export default function App() {
       <nav className="relative z-10 px-6 pt-12 flex justify-center max-w-7xl mx-auto">
         <div className="flex items-center">
           <img 
-            src="/assets/aistudio/Logo_1213de0d.png" 
+            src="/assets/Logo_1213de0d.png" 
             alt="I AM MARKETING Logo" 
             className="h-20 md:h-24 w-auto brightness-0 invert"
           />
