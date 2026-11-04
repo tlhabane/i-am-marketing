@@ -2,8 +2,8 @@ name: Build and Deploy
 
 on:
   workflow_dispatch:
-    #branches:
-      #- master
+    branches:
+      - main
 
 jobs:
   # The 'build' job remains the same (npm run build and upload-artifact)
