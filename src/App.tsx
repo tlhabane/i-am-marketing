@@ -257,7 +257,7 @@ export default function App() {
                       <CheckCircle2 className="w-5 h-5" />
                     ) : (
                       <>
-                        Get Notified
+                        <span className="hidden sm:inline-flex">Get Notified</span>
                         <ArrowRight className="w-4 h-4" />
                       </>
                     )}
@@ -328,6 +328,33 @@ export default function App() {
       </main>
 
       {/* Footer */}
+      <footer className="relative z-10">
+        <div className="max-w-7xl mx-auto text-center">
+          <div className="flex flex-row justify-center items-center text-[13px] md:text-sm text-white/60 tracking-tighter gap-4 my-4">
+            <span className="flex items-center gap-3 group">
+              <Phone className="w-3 h-3 md:w-5 md:h-5 text-white/20 group-hover:text-[#E5B84A] transition-colors shrink-0" />
+              <a href="tel:+27832779549" className="text-white/60 hover:text-white transition-colors">
+                +27 83 277 9549
+              </a>
+            </span>
+            <span className="flex items-center bg-white/60 w-px h-4 md:h-6" />
+            <span className="flex items-center gap-3 group">
+              <Mail className="w-3 h-3 md:w-5 md:h-5 text-white/20 group-hover:text-[#E5B84A] transition-colors shrink-0" />
+              <a href="mailto:hello@iam.za.bz" className="text-white/60 hover:text-white transition-colors">
+                hello@iam.za.bz
+              </a>
+            </span>
+          </div>
+        </div>
+
+        <div className="px-6 py-4 border-t border-white/5">
+          <div className="max-w-7xl mx-auto text-center">
+            <p className="text-[10px] text-white/20 tracking-tighter">
+              &copy; {new Date().getFullYear()} I Am Marketing. All rights reserved.
+            </p>
+          </div>
+        </div>
+      </footer>
       <footer className="relative z-10 px-6 py-16 border-t border-white/5 hidden invisible">
         <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
           <div className="space-y-6">
