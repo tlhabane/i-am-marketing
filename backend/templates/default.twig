@@ -1,0 +1,96 @@
+{{ source('header.twig') }}
+{# START: Mail Content #}
+<table class="outer" align="center" style="text-align: left">
+    {# Alternate message #}
+    {% if alternate_message is defined and alternate_message is not empty %}
+    <span style="display: none; visibility: hidden; color: {{ theme.body_bg }};">
+        {{ alternate_message }}
+    </span>
+    {% endif %}
+
+    {# Branding #}
+    {% if organization_logo is defined and organization_logo is not empty %}
+        <table width="100%" style="width: 100%">
+            <tr>
+                <td style="margin-bottom:25px; padding: 0 10px; text-align: left;">
+                    {% if website_address is defined and website_address is not empty %}
+                        <a href="{{ website_address }}">
+                            <img src="{{ organization_logo }}" width="125" {% if organization_name is defined %}alt="{{ organization_name }}"{% endif %} />
+                        </a>
+                    {% else %}
+                        <img src="{{ organization_logo }}" width="125" {% if organization_name is defined %}alt="{{ organization_name }}"{% endif %} />
+                    {% endif %}
+                </td>
+                <td style="margin-bottom:25px; padding: 0 10px; width: 450px; text-align: right; vertical-align: middle;">
+                    {% if email_title is defined and email_title is not empty %}
+                        <p style="font-size:14px; font-weight: bold; line-height:18px;">
+                            {{ email_title }}
+                        </p>
+                    {% else %}
+                        &nbsp;
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+    {% endif %}
+
+    {# Main #}
+    <tr>
+        <td class="one-column">
+            <table width="100%">
+                <tr>
+                    <td class="inner contents" style="margin-top: 15px;">
+                        {{ message_body | raw }}
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    {# Footer #}
+    <tr style="background-color: {{ theme.footer_bg }}; padding: 30px 15px; text-align: center; color: {{ theme.footer_text_color }};" >
+        <td class="one-column" style="background: {{ theme.footer_bg }}; padding: 15px;">
+            <table width="100%" style="font-size: 12px; color: {{ theme.footer_text_color }}; padding-bottom: 30px; text-align: left;">
+                <tr>
+                    <td class="inner contents" style="padding-bottom: 10px; border-bottom: 2px solid #ffffff;">
+                        {% if organization_name is defined and organization_name is not empty %}
+                            <p style="font-size: 11px;">If you're not sure why you're receiving this message, kindly contact {{ organization_name }} on
+                                {{ organization_phone }} or via email {{ organization_email }}.</p>
+                        {% else %}
+                            {% if organization_support_email is defined and organization_support_email is not empty %}
+                            <p style="font-size: 11px;">If you're not sure why you're receiving this message, please contact our support team by emailing {{ organization_support_email }}.</p>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td class="inner contents" style="padding-top: 15px;">
+                        <p style="font-size: 10px;">
+                            {% if organization_name is defined and organization_name is not empty and privacy_policy_url is defined and privacy_policy_url is not empty %}
+                                {{ organization_name }} respects your privacy.
+                                To learn more, read our <a style="color: {{ theme.primary_color }}; text-decoration: underline;" href="{{ privacy_policy_url }}">Privacy Statement</a>.<br />
+                            {% else %}
+                                We respects your privacy.
+                            {% endif %}
+                            {% if contact_page_url is defined and contact_page_url is not empty %}
+                                If you receive a suspicious email, please <a style="color: {{ theme.primary_color }}; text-decoration: underline;" href="{{ contact_page_url }}">Report it</a>.
+                            {% endif %}
+                            {% if security_policy_url is defined and security_policy_url is not empty %}
+                                Visit our <a style="color: {{ theme.primary_color }}; text-decoration: underline;" href="{{ security_policy_url }}}">Security center</a> to find out more.
+                            {% endif %}
+                        </p>
+                        <p style="font-size: 10px;">
+                            {% if organization_name is defined and organization_name is not empty %}
+                                &copy; {{ "now"|date("Y") }} {{ organization_name }}. All rights reserved.
+                            {% else %}
+                                &copy; {{ "now"|date("Y") }}. All rights reserved.
+                            {% endif %}
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+{# END: Mail Content #}
+{{ source('footer.twig') }}
