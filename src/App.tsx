@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
   Mail, 
@@ -12,15 +12,19 @@ import {
   Monitor
 } from 'lucide-react';
 import Logo from './assets/Logo_1213de0d.png';
+import { PageLoadingSpinner } from "./components/PageLoadingSpinner";
+import { CountdownCircle } from "./components/CountdownCircle";
+import { ServiceCard } from "./components/ServiceCard";
+import { useSendHttpRequest, type RequestMethod } from './hooks/useSendHttpRequest';
+import { APP_NAME, APP_SLOGAN, BASE_URL } from './config'
 
 // --- Constants & Types ---
-
-const COLORS = {
+/*const COLORS = {
   primary: '#4B2A5B',
   base: '#1F1027',
   accent: '#E5B84A',
   text: '#F8F9FA',
-};
+};*/
 
 const LAUNCH_DATE = new Date('2027-01-02T00:00:00+02:00');
 
@@ -59,127 +63,11 @@ interface TimeLeft {
   seconds: number;
 }
 
-// --- Components ---
-
-const PageLoadingSpinner = () => {
-  return (
-    <motion.div
-      key="loader"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.5 }}
-      className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#1F1027]"
-    >
-      <div className="relative">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-          className="w-24 h-24 rounded-full border-2 border-white/5 border-t-[#E5B84A]"
-        />
-        <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-12 h-12 bg-[#4B2A5B]/20 rounded-full animate-pulse" />
-        </div>
-      </div>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="mt-8 flex flex-col items-center gap-2"
-      >
-        <span className="text-[#E5B84A] font-bold tracking-[0.3em] uppercase text-[10px]">I Am Marketing</span>
-        <div className="h-[2px] w-12 bg-white/10 overflow-hidden rounded-full">
-          <motion.div
-            animate={{ x: [-48, 48] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            className="w-1/2 h-full bg-[#E5B84A]"
-          />
-        </div>
-      </motion.div>
-    </motion.div>
-  );
-};
-const CountdownCircle = ({ value, label, max }: { value: number; label: string; max: number }) => {
-  const radius = 42;
-  const circumference = 2 * Math.PI * radius;
-  // Progress is inverse (decreases as time passes) or direct? 
-  // Usually, for countdowns, we want the circle to empty or fill. 
-  // Let's make it fill based on the remaining value relative to max.
-  const progress = Math.min(value / max, 1);
-  const offset = circumference - progress * circumference;
-
-  return (
-    <div className="flex flex-col items-center">
-      <div className="relative w-24 h-24 md:w-32 md:h-32 flex items-center justify-center group">
-        {/* Glow effect */}
-        <div className="absolute inset-2 bg-[#E5B84A]/5 rounded-full blur-xl group-hover:bg-[#E5B84A]/10 transition-colors" />
-        
-        <svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-[0_0_8px_rgba(229,184,74,0.1)]">
-          {/* Background Track */}
-          <circle
-            cx="50%"
-            cy="50%"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="4"
-            fill="transparent"
-            className="text-white/5"
-          />
-          {/* Progress Indicator */}
-          <motion.circle
-            cx="50%"
-            cy="50%"
-            r={radius}
-            stroke="#E5B84A"
-            strokeWidth="4"
-            fill="transparent"
-            strokeDasharray={circumference}
-            animate={{ strokeDashoffset: offset }}
-            transition={{ 
-              duration: 1, 
-              ease: "linear" // Linear for seconds, but spring-like for others could be nice
-            }}
-            strokeLinecap="round"
-          />
-        </svg>
-        
-        <motion.div 
-          key={value}
-          initial={{ opacity: 0, scale: 0.9, y: 5 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative z-10 flex flex-col items-center"
-        >
-          <span className="text-2xl md:text-3xl font-black text-white tracking-tighter">
-            {value.toString().padStart(2, '0')}
-          </span>
-        </motion.div>
-      </div>
-      <span className="mt-1 text-[10px] md:text-xs font-bold uppercase tracking-[0.25em] text-white/20">
-        {label}
-      </span>
-    </div>
-  );
-};
-
-const ServiceCard = ({ icon: Icon, title, description, delay }: { icon: any; title: string; description: string; delay: number }) => (
-  <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true }}
-    transition={{ delay }}
-    className="p-6 rounded-2xl bg-white/5 border border-white/10 hover:border-[#E5B84A]/30 transition-colors group"
-  >
-    <div className="w-12 h-12 rounded-lg bg-[#4B2A5B]/50 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
-      <Icon className="w-6 h-6 text-[#E5B84A]" />
-    </div>
-    <h3 className="text-lg font-semibold text-white mb-2">{title}</h3>
-    <p className="text-sm text-white/60 leading-relaxed">{description}</p>
-  </motion.div>
-);
-
 const Main = () => {
   const [email, setEmail] = useState('');
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+  const [httpError, setHttpError] = useState('');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -196,21 +84,34 @@ const Main = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+  const sendHttpRequest = useSendHttpRequest();
+
+  const handleSubmit = useCallback(async (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const regExp =
-            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    if (!regExp.test(String(email).toLowerCase())) {
-      setStatus('error');
-      return;
-    }
-    setStatus('loading');
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      setHttpError('');
+      const regExp =
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+      if (!regExp.test(String(email).toLowerCase())) {
+        setStatus('error');
+        return;
+      }
+      setStatus('loading');
+
+      const httpRequestConfig = {
+        url: '/newsletter',
+        method: 'POST' as RequestMethod,
+        body: { email }
+      };
+
+      await sendHttpRequest(httpRequestConfig);
       setStatus('success');
       setEmail('');
-    }, 1500);
-  };
+    } catch (e: any) {
+      setStatus('error');
+      setHttpError(e?.message || 'An error occurred while processing your request. Please try again later');
+    }
+  }, [email, sendHttpRequest]);
 
   return (
     <motion.div
@@ -230,7 +131,7 @@ const Main = () => {
         <div className="flex items-center">
           <img 
             src={Logo} 
-            alt="I Am Marketing | Integrated Marketing & Print Agency" 
+            alt={`${APP_NAME} | ${APP_SLOGAN}`}
             className="h-24 md:h-36 w-auto brightness-0 invert"
           />
         </div>
@@ -326,7 +227,7 @@ const Main = () => {
                     exit={{ opacity: 0 }}
                     className="mt-4 text-red-400 text-sm font-medium"
                   >
-                    Please enter a valid email address.
+                    {httpError || 'Please enter a valid email address.'}
                   </motion.p>
                 )}
               </AnimatePresence>
@@ -413,6 +314,35 @@ export default function App() {
     const timer = setTimeout(() => setIsPageLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
+
+  const sendHttpRequest = useSendHttpRequest();
+  useEffect(() => {
+    if (
+        typeof window !== 'undefined' &&
+        BASE_URL.startsWith('http://localhost') &&
+        window.location.hostname !== 'localhost' &&
+        window.location.hostname !== '127.0.0.1'
+    ) {
+      return;
+    }
+
+    let cancelled = false;
+    async function initApp() {
+      try {
+        const response = await sendHttpRequest({ url: '/' });
+        if (!cancelled && response?.csrf_token) {
+          (window as any).csrfToken = response.csrf_token;
+        }
+      } catch {
+        // Optional backend handshake unavailable in standalone static preview
+      }
+    }
+
+    void initApp();
+    return () => {
+      cancelled = true;
+    };
+  }, [sendHttpRequest]);
 
   return (
     <div className="min-h-screen bg-[#1F1027] text-[#F8F9FA] selection:bg-[#E5B84A] selection:text-[#1F1027] overflow-x-hidden">

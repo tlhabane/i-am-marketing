@@ -1,0 +1,13 @@
+### Composer template
+composer.phar
+vendor
+
+# Secrets
+.env
+
+# Misc
+logs
+public/backup
+public/downloads
+public/uploads/*
+!public/uploads/.htaccess

@@ -1,0 +1,26 @@
+<p style="margin-top: 10px; margin-bottom: 20px;">
+    {% if organization_name is defined and organization_name is not empty %}
+        Hi {{ organization_name }} team,
+    {% else %}
+        Hi there,
+    {% endif %}
+</p>
+<p style="margin-bottom: 20px;">
+    A new user has subscribed to your mailing list via your website.
+</p>
+<p style="margin-bottom: 20px;">
+    Subscriber email: {{email}}<br />
+    Date & time: {{ "now"|date("F j, Y H:i") }}
+    {% if source_name is defined and source_name is not empty %}
+        <br />Source: {{source_name}}
+    {% endif %}
+</p>
+
+<p style="margin-bottom: 20px;">
+    You can manage this subscriber from the admin panel or export the mailing list as needed.
+</p>
+
+<p style="margin-bottom: 20px;">
+    Regards,<br />
+    Website Notification System
+</p>

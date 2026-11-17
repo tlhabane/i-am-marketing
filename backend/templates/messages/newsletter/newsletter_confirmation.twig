@@ -1,0 +1,22 @@
+<p style="margin-top: 10px; margin-bottom: 20px;">
+    Hi there,
+</p>
+<p style="margin-bottom: 20px;">
+    Thanks for subscribing to our mailing list!
+</p>
+<p style="margin-bottom: 20px;">
+    You’re now on our list and will be the first to receive updates, news, and important announcements from us. We promise to keep things relevant and respectful of your inbox.
+</p>
+
+<p style="margin-bottom: 20px;">
+    If you ever change your mind, you can unsubscribe at any time using the link in our emails.
+</p>
+
+<p style="margin-bottom: 20px;">
+    Welcome aboard,<br />
+    {% if organization_name is defined and organization_name is not empty %}
+        {{ organization_name }} Team,
+    {% else %}
+        Website Notification System
+    {% endif %}
+</p>
